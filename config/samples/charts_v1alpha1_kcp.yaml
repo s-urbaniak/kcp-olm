@@ -1,0 +1,91 @@
+apiVersion: charts.kcp.io/v1alpha1
+kind: Kcp
+metadata:
+  name: kcp-sample
+spec:
+  # Default values copied from <project_dir>/helm-charts/kcp/values.yaml
+  audit:
+    enabled: false
+    log:
+      dir: /var/audit
+      maxAge: "10"
+      maxBackup: "1"
+      maxSize: "250"
+    policy:
+      config: |
+        # Log all requests at the Metadata level.
+        apiVersion: audit.k8s.io/v1
+        kind: Policy
+        rules:
+        - level: Metadata
+      dir: /etc/kcp/audit
+      fileName: audit-policy.yml
+    volumeClassName: gp2-csi
+    volumeSize: 1Gi
+  certificates:
+    privateKeys:
+      algorithm: RSA
+      size: 2048
+    subject: {}
+  etcd:
+    cpuRequest: 500m
+    enabled: true
+    image: quay.io/coreos/etcd
+    memoryLimit: 20Gi
+    memoryRequest: 2Gi
+    profiling:
+      enabled: false
+    tag: v3.5.4
+    volumeSize: 8Gi
+  externalHostname: "kcp"
+  githubUserEditAccess:
+  - test
+  kcp:
+    cpuRequest: 100m
+    etcd:
+      clientCertificate:
+        commonName: root
+        issuer: etcd-client-issuer
+      serverAddress: https://etcd:2379
+    extraFlags: []
+    image: ghcr.io/kcp-dev/kcp
+    logicalClusterAdminFlag: true
+    memoryLimit: 20Gi
+    memoryRequest: 5Gi
+    profiling:
+      enabled: false
+      port: 6060
+    tag: latest
+    v: "3"
+    volumeClassName: gp2-csi
+    volumeSize: 1Gi
+  kcpFrontProxy:
+    certificate:
+      issuerSpec:
+        acme:
+          privateKeySecretRef:
+            name: kcp-front-proxy-issuer-account-key
+          server: https://acme-v02.api.letsencrypt.org/directory
+          solvers:
+          - http01:
+              ingress:
+                serviceType: ClusterIP
+    gateway:
+      className: ""
+      enabled: false
+    image: ghcr.io/kcp-dev/kcp
+    ingress:
+      annotations: {}
+      enabled: false
+      secret: ""
+    openshiftRoute:
+      enabled: true
+    profiling:
+      enabled: false
+      port: 6060
+    shardsKubeConfigFlag: true
+    tag: latest
+    v: "4"
+  oidc: {}
+  
+  

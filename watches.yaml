@@ -1,0 +1,6 @@
+# Use the 'create api' subcommand to add watches to this file.
+- group: charts.kcp.io
+  version: v1alpha1
+  kind: Kcp
+  chart: helm-charts/kcp
+#+kubebuilder:scaffold:watch
